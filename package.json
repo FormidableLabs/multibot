@@ -6,7 +6,7 @@
   "scripts": {
     "lint-server": "eslint --color -c .eslintrc-server lib bin",
     "lint": "npm run lint-server",
-    "test": "npm run lint"
+    "check": "npm run lint"
   },
   "author": "Ryan Roemer <ryan.roemer@formidable.com>",
   "license": "MIT",
