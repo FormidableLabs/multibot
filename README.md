@@ -26,7 +26,7 @@ Usage: multibot --action=<string> [options]
 Options:
   --action       Actions to take                               [string] [required] [choices: "read"]
   --branch-src   Source git branch to read from                         [string] [default: "master"]
-  --branch-dst   Destination git branch to write to                                         [string]
+  --branch-dst   Destination git branch to write to [NOT IMPLEMENTED]                       [string]
   --files        List of files (space delimited) to read / transform              [array] [required]
   --org          GitHub organization for repos (can be instead specified on repos)          [string]
   --repos        GitHub repositories (space delimited) of form `repo` or `org/repo`

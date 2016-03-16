@@ -34,7 +34,9 @@ var parseArgs = function () {
       default: "master"
     })
     .option("branch-dst", {
-      describe: "Destination git branch to write to",
+      // TODO: Mutate destination branch.
+      // https://github.com/FormidableLabs/multibot/issues/2
+      describe: "Destination git branch to write to [NOT IMPLEMENTED]",
       type: "string"
     })
 
