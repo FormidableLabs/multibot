@@ -20,7 +20,7 @@ var parseArgs = function () {
       describe: "Actions to take",
       type: "string",
       choices: ["read"],
-      demand: true
+      default: "read"
     })
     .example(
       "$0 --action=read --gh-token=TOKEN --org FormidableLabs --repos multibot --files README.md",

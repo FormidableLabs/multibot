@@ -45,11 +45,7 @@ Examples:
   README.md
 ```
 
-## Actions
-
-Multibot can initiate various read-only and repository-mutating actions.
-
-### Transforms
+## Transforms
 
 The bread and butter of Multibot is actually _changing_ files across many
 projects in a sensible and predictable way. A "transform" is really just a JS
@@ -75,6 +71,10 @@ conditional transform logic, while still operating over a lot of files.
 
 A transform is hooked into a multibot action with the option:
 `--transform=PATH/TO/file.js`.
+
+## Actions
+
+Multibot can initiate various read-only and repository-mutating actions.
 
 ### `read`
 
