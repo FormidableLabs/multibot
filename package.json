@@ -2,17 +2,35 @@
   "name": "multibot",
   "version": "0.0.1",
   "description": "A friendly multi-repository robot.",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FormidableLabs/multibot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FormidableLabs/multibot/issues"
+  },
+  "homepage": "https://github.com/FormidableLabs/multibot",
+  "license": "MIT",
+  "author": "Ryan Roemer <ryan.roemer@formidable.com>",
+  "bin": {
+    "builder": "bin/multibot.js"
+  },
   "scripts": {
     "lint-server": "eslint --color -c .eslintrc-server lib bin",
     "lint": "npm run lint-server",
     "check": "npm run lint"
   },
-  "author": "Ryan Roemer <ryan.roemer@formidable.com>",
-  "license": "MIT",
+  "dependencies": {
+    "async": "^1.5.2",
+    "chalk": "^1.1.1",
+    "diff": "^2.2.2",
+    "octonode": "^0.7.4",
+    "yargs": "^4.3.1"
+  },
   "devDependencies": {
     "eslint": "^2.4.0",
-    "eslint-config-defaults": "^9.0.0",
+    "eslint-config-defaults": "^10.0.0-alpha.1",
     "eslint-plugin-filenames": "^0.2.0"
   }
 }
