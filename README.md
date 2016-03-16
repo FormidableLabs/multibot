@@ -24,7 +24,7 @@ A friendly multi-repository robot.
 Usage: multibot --action=<string> [options]
 
 Options:
-  --action       Actions to take                               [string] [required] [choices: "read"]
+  --action       Actions to take                        [string] [choices: "read"] [default: "read"]
   --branch-src   Source git branch to read from                         [string] [default: "master"]
   --branch-dst   Destination git branch to write to [NOT IMPLEMENTED]                       [string]
   --files        List of files (space delimited) to read / transform              [array] [required]
