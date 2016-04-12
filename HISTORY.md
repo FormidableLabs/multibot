@@ -1,7 +1,7 @@
 History
 =======
 
-## Current
+## 0.1.0
 
 * Implements `--action=branch` to create branches in repositories.
 * Add README.md documentation for scenarios.
