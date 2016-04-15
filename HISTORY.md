@@ -1,6 +1,17 @@
 History
 =======
 
+## Current
+
+* Implements `--action=commit` to create commits in repositories.
+* Replace `octonode` client with `github-api`.
+* Add `--dry-run` option to skip all mutating actions.
+* Allow `--action=read` to process non-existing files.
+* _Breaking Changes_:
+    * `null` source means "create" file.
+    * `null` transform output means "delete" file.
+    * Change signature of transforms to `(obj, callback)`.
+
 ## 0.1.0
 
 * Implements `--action=branch` to create branches in repositories.
