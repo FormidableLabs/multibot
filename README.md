@@ -24,10 +24,11 @@ A friendly multi-repository robot.
 Usage: multibot --action=<string> [options]
 
 Options:
-  --action          Actions to take [string] [choices: "read", "branch", "commit"] [default: "read"]
+  --action          Actions to take
+                    [string] [choices: "read", "branch", "commit", "pull-request"] [default: "read"]
   --branch          Target branch to use for operations                 [string] [default: "master"]
   --branch-new      New branch to create for `--action=branch`                              [string]
-  --allow-existing  Allow existing destination branches for `--action=branch`?
+  --allow-existing  Allow existing destination branches / PRs for `--action=branch|pull-request`?
                                                                            [boolean] [default: true]
   --files           List of files (space delimited) to read / transform                      [array]
   --org             GitHub organization for repos (can be instead specified on repos)       [string]
@@ -45,9 +46,18 @@ Options:
   -v, --version     Show version number                                                    [boolean]
 
 Examples:
-  multibot --action=read --gh-token=TOKEN             Display the README file of multibot from
-  --org FormidableLabs --repos multibot --files       GitHub
+  multibot --action=read --gh-token=TOKEN --org       Display the README file of multibot from
+  FormidableLabs --repos repo1 repo2 --files          GitHub
   README.md
+  multibot --action=branch --gh-token=TOKEN --org     Create new `feature-foo` branch
+  FormidableLabs --repos repo1 repo2
+  --branch-new=feature-foo
+  multibot --action=commit --gh-token=TOKEN --org     Add transform of README as commit to branch
+  FormidableLabs --repos repo1 repo2 --files          `feature-foo`
+  README.md --transform=/PATH/TO/transform.js
+  multibot --action=pull-request --gh-token=TOKEN     Create pull request for `feature-foo` branch
+  --org FormidableLabs --repos repo1 repo2
+  --branch=feature-foo
 ```
 
 ## Transforms
@@ -132,15 +142,14 @@ $ multibot \
   --branch=feature-foo \
   --action=commit \
   --format=diff
-```
 
-<!-- TODO: Open Pull Request / FULL PR
-```
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
   --branch=feature-foo \
   --action=pull-request
 ```
+
+<!-- TODO: Open Pull Request / FULL PR
 
 or all as a single command:
 
@@ -183,7 +192,7 @@ Flags:
 
 ### `branch`
 
-Create a branch in repositories
+Create a branch in repositories.
 
 Example:
 
@@ -206,10 +215,6 @@ Flags:
 * `--format`: (Optional) Output report as `json`, `text`, or `diff`
 * `--allow-existing`: (Optional, default: `true`) Allow existing destination branches?
 * `--dry-run`: (Optional) Simulate mutating actions.
-
-  --branch          Target branch to use for operations                 [string] [default: "master"]
-  --branch-new      New branch to create for `--action=branch`                              [string]
-
 
 ### `commit`
 
@@ -291,23 +296,43 @@ existing blob references while splicing in our updates / creates and creating
 a new tree _without_ a base tree reference, which completely replaces the
 entire former tree.
 
+### `pull-request`
+
+Create a pull request from a branch in repositories.
+
+Example:
+
+```sh
+$ multibot \
+  --org FormidableLabs --repos repo1 repo2 repo3 \
+  --branch==branch-o-doom \
+  --action=pull-request \
+  --format=text
+```
+
+Flags:
+
+* `--action=pull-request`
+* `--branch`: Non-`master` target branch to create pull request for
+* `--org`: (Optional) GitHub organization for repos
+* `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
+* `--format`: (Optional) Output report as `json`, `text`, or `diff`
+* `--allow-existing`: (Optional, default: `true`) Allow existing pull requests?
+* `--dry-run`: (Optional) Simulate mutating actions.
+
+* TODO: `--allow-existing` checks.
+* TODO: `--dry-run` code flow.
+
 <!--
-### TODO `pull-request`
-
-Create a pull request from a branch in repositories
-
-* TODO: Error if `master` is `branch`.
-* TODO: Files not required here.
-* TODO: Flag to error if branch already PR-ed.
-* TODO: Diff report (diff vs. master).
-* TODO: Report notes
-
-### TODO `full-pr`
+### TODO `branch-to-pr`
 
 Create a branch, add commits, open a PR. An "all-in-one" aggregator for a common
 use case for multibot.
 
 * TODO: Note different/changing use of `branch` and `branch-new` in this action.
+* TODO: Flag to error if branch already PR-ed.
+* TODO: Diff report (diff vs. master).
+* TODO: Report notes
 
 -->
 
