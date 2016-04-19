@@ -26,8 +26,8 @@ Usage: multibot --action=<string> [options]
 Options:
   --action          Actions to take
                     [string] [choices: "read", "branch", "commit", "pull-request"] [default: "read"]
-  --branch          Target branch to use for operations                 [string] [default: "master"]
-  --branch-new      New branch to create for `--action=branch`                              [string]
+  --branch-src      Target branch to use for operations                 [string] [default: "master"]
+  --branch-dest     New branch to create for `--action=branch`                              [string]
   --allow-existing  Allow existing destination branches / PRs for `--action=branch|pull-request`?
                                                                            [boolean] [default: true]
   --files           List of files (space delimited) to read / transform                      [array]
@@ -51,13 +51,13 @@ Examples:
   README.md
   multibot --action=branch --gh-token=TOKEN --org     Create new `feature-foo` branch
   FormidableLabs --repos repo1 repo2
-  --branch-new=feature-foo
+  --branch-dest=feature-foo
   multibot --action=commit --gh-token=TOKEN --org     Add transform of README as commit to branch
   FormidableLabs --repos repo1 repo2 --files          `feature-foo`
   README.md --transform=/PATH/TO/transform.js
   multibot --action=pull-request --gh-token=TOKEN     Create pull request for `feature-foo` branch
   --org FormidableLabs --repos repo1 repo2
-  --branch=feature-foo
+  --branch-src=feature-foo
 ```
 
 ## Transforms
@@ -132,20 +132,20 @@ If that looks good, then create a branch, commit the transform, and open a PR:
 ```sh
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
-  --branch=master \
-  --branch-new=feature-foo \
+  --branch-src=master \
+  --branch-dest=feature-foo \
   --action=branch
 
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
   --transform=foo.js --files README.md \
-  --branch=feature-foo \
+  --branch-src=feature-foo \
   --action=commit \
   --format=diff
 
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
-  --branch=feature-foo \
+  --branch-src=feature-foo \
   --action=pull-request
 ```
 
@@ -157,8 +157,8 @@ or all as a single command:
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
   --transform=foo.js --files README.md \
-  --branch=master \
-  --branch-new=feature-foo \
+  --branch-src=master \
+  --branch-dest=feature-foo \
   --action=open-pr \
   --format=diff
 ```
@@ -183,7 +183,7 @@ $ multibot \
 Flags:
 
 * `--action=read`
-* `--branch`: (Optional, default: `master`) Source branch to read from.
+* `--branch-src`: (Optional, default: `master`) Source branch to read from.
 * `--org`: (Optional) GitHub organization for repos
 * `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
 * `--files`: List of files (space delimited) to read / transform
@@ -199,8 +199,8 @@ Example:
 ```sh
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
-  --branch=master \
-  --branch-new=branch-o-doom \
+  --branch-src=master \
+  --branch-dest=branch-o-doom \
   --action=branch \
   --format=text
 ```
@@ -208,8 +208,8 @@ $ multibot \
 Flags:
 
 * `--action=branch`
-* `--branch`: (Optional, default: `master`) Source branch to read from.
-* `--branch-new`: Non-`master` new branch to create.
+* `--branch-src`: (Optional, default: `master`) Source branch to read from.
+* `--branch-dest`: Non-`master` new branch to create.
 * `--org`: (Optional) GitHub organization for repos
 * `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
 * `--format`: (Optional) Output report as `json`, `text`, or `diff`
@@ -227,7 +227,7 @@ Example:
 ```sh
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
-  --branch=branch-o-doom \
+  --branch-dest=branch-o-doom \
   --files README.md LICENSE docs/DANGER.md \
   --action=commit \
   --transform="PATH/TO/transformify.js" \
@@ -262,7 +262,8 @@ on a specific repository is a noop, no actual mutation actions are performed.
 Flags:
 
 * `--action=commit`
-* `--branch`: Non-`master` target branch to update with commit
+* `--branch-dest`: Non-`master` target branch to update with commit. (Also the
+  source branch to read current files from.)
 * `--org`: (Optional) GitHub organization for repos
 * `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
 * `--files`: List of files (space delimited) to read / transform
@@ -305,7 +306,8 @@ Example:
 ```sh
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
-  --branch==branch-o-doom \
+  --branch-src=master \
+  --branch-dest=branch-o-doom \
   --action=pull-request \
   --format=text
 ```
@@ -313,7 +315,8 @@ $ multibot \
 Flags:
 
 * `--action=pull-request`
-* `--branch`: Non-`master` target branch to create pull request for
+* `--branch-src`: Base branch for pull request against
+* `--branch-dest`: Non-`master` target branch to create pull request for
 * `--org`: (Optional) GitHub organization for repos
 * `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
 * `--format`: (Optional) Output report as `json`, `text`, or `diff`
@@ -329,7 +332,7 @@ Flags:
 Create a branch, add commits, open a PR. An "all-in-one" aggregator for a common
 use case for multibot.
 
-* TODO: Note different/changing use of `branch` and `branch-new` in this action.
+* TODO: Note different/changing use of `branch` and `branch-dest` in this action.
 * TODO: Flag to error if branch already PR-ed.
 * TODO: Diff report (diff vs. master).
 * TODO: Report notes
