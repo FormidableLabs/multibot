@@ -142,7 +142,10 @@ $ multibot \
   --branch-src=feature-foo \
   --action=commit \
   --format=diff
+```
 
+<!-- TODO: Open Pull Request / FULL PR
+```
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
   --branch-src=feature-foo \
@@ -338,6 +341,25 @@ use case for multibot.
 * TODO: Report notes
 
 -->
+
+## GitHub API
+
+`multibot` has the convenient feature that it never touches disk to perform any
+repository / branch operations. This is done by relying entirely on the
+[GitHub API](https://developer.github.com/v3/) for operations.
+
+This also means that `multibot` must stay within the
+[API rate limits](https://developer.github.com/v3/rate_limit/). If you go
+beyond the limit, you will most likely encounter 403 HTTP error codes. If this
+happens, check your rate limit with:
+
+```sh
+$ curl -H "Authorization: token OAUTH-TOKEN" https://api.github.com/rate_limit
+```
+
+Look at the `remaining` field to see how many requests you have left for the
+hour. GitHub currently allows authenticated users to make up to 5,000 requests
+per hour.
 
 ## GitHub API
 
