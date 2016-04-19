@@ -3,11 +3,15 @@ History
 
 ## Current
 
+* Implements `--action=branch-to-pr` to create branch, commit, and PR.
+* Implements `--action=pull-request` to create pull requests.
 * Implements `--action=commit` to create commits in repositories.
 * Replace `octonode` client with `github-api`.
 * Add `--dry-run` option to skip all mutating actions.
 * Allow `--action=read` to process non-existing files.
 * _Breaking Changes_:
+    * `--branch|branch-new` flags are replaced with `--branch-src|branch-dest`.
+    * `--action=commit` uses target branch flag `--branch-dest` now.
     * `null` source means "create" file.
     * `null` transform output means "delete" file.
     * Change signature of transforms to `(obj, callback)`.
