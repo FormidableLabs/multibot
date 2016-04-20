@@ -138,22 +138,22 @@ $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
   --branch-src=master \
   --branch-dest=feature-foo \
-  --action=branch
+  --action=branch \
+  --format=text
 
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
   --transform=foo.js --files README.md \
-  --branch-src=feature-foo \
+  --branch-dest=feature-foo \
   --action=commit \
   --format=diff
-```
 
-<!-- TODO: Open Pull Request / FULL PR
-```
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
-  --branch-src=feature-foo \
-  --action=pull-request
+  --branch-dest=feature-foo \
+  --msg=$'A big change\nfrom a bot.'' \ # Note use of bash ANSI C parsing of newline
+  --action=pull-request \
+  --format=text
 ```
 
 <!-- TODO: Open Pull Request / FULL PR
@@ -166,7 +166,7 @@ $ multibot \
   --transform=foo.js --files README.md \
   --branch-src=master \
   --branch-dest=feature-foo \
-  --action=open-pr \
+  --action=branch-to-pr \
   --format=diff
 ```
 -->
@@ -317,6 +317,8 @@ $ multibot \
   --branch-src=master \
   --branch-dest=branch-o-doom \
   --action=pull-request \
+  --title="The Bots have arrived" \
+  --msg="...and are making mischief" \
   --format=text
 ```
 
