@@ -156,8 +156,6 @@ $ multibot \
   --format=text
 ```
 
-<!-- TODO: Open Pull Request / FULL PR
-
 or all as a single command:
 
 ```sh
@@ -166,10 +164,9 @@ $ multibot \
   --transform=foo.js --files README.md \
   --branch-src=master \
   --branch-dest=feature-foo \
-  --action=branch-to-pr \
-  --format=diff
+  --msg=$'A big change\nfrom a bot.'' \
+  --action=branch-to-pr
 ```
--->
 
 ### `read`
 
