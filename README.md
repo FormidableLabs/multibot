@@ -26,8 +26,9 @@ Usage: multibot --action=<string> [options]
 Options:
   --action          Actions to take
                     [string] [choices: "read", "branch", "commit", "pull-request"] [default: "read"]
-  --branch-src      Target branch to use for operations                 [string] [default: "master"]
-  --branch-dest     New branch to create for `--action=branch`                              [string]
+  --branch-src      Source branch to start from / target for pull request
+                                                                        [string] [default: "master"]
+  --branch-dest     Destination branch to create / commit / open in a pull request          [string]
   --allow-existing  Allow existing destination branches / PRs for `--action=branch|pull-request`?
                                                                            [boolean] [default: true]
   --files           List of files (space delimited) to read / transform                      [array]
@@ -40,7 +41,8 @@ Options:
   --transform       Path to transform JS file                                               [string]
   --format          Display output format
                                         [string] [choices: "json", "text", "diff"] [default: "json"]
-  --commit-msg      A commit message for the transform                                      [string]
+  --msg             Commit message / pull request description                               [string]
+  --title           Title for pull request (fallback to first line of `--msg`)              [string]
   --dry-run         Skip / simulate all mutating actions                  [boolean] [default: false]
   -h, --help        Show help                                                              [boolean]
   -v, --version     Show version number                                                    [boolean]
@@ -55,9 +57,11 @@ Examples:
   multibot --action=commit --gh-token=TOKEN --org     Add transform of README as commit to branch
   FormidableLabs --repos repo1 repo2 --files          `feature-foo`
   README.md --transform=/PATH/TO/transform.js
+  --msg='commit bot'
   multibot --action=pull-request --gh-token=TOKEN     Create pull request for `feature-foo` branch
   --org FormidableLabs --repos repo1 repo2
-  --branch-src=feature-foo
+  --branch-dest=feature-foo --title='PR from Bot'
+  --msg='BotBot'
 ```
 
 ## Transforms
@@ -234,7 +238,7 @@ $ multibot \
   --files README.md LICENSE docs/DANGER.md \
   --action=commit \
   --transform="PATH/TO/transformify.js" \
-  --commit-msg="Add some DANGER to the repo files." \
+  --msg="Add some DANGER to the repo files." \
   --format=diff
 ```
 
@@ -270,6 +274,7 @@ Flags:
 * `--org`: (Optional) GitHub organization for repos
 * `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
 * `--files`: List of files (space delimited) to read / transform
+* `--msg`: Commit message
 * `--transform`: (Optional) Path to transform JS file
 * `--format`: (Optional) Output report as `json`, `text`, or `diff`
 * `--dry-run`: (Optional) Simulate mutating actions.
@@ -322,12 +327,11 @@ Flags:
 * `--branch-dest`: Non-`master` target branch to create pull request for
 * `--org`: (Optional) GitHub organization for repos
 * `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
+* `--title`: Title for pull request (fallback to first line of `--msg`)
+* `--msg`: Pull request description
 * `--format`: (Optional) Output report as `json`, `text`, or `diff`
 * `--allow-existing`: (Optional, default: `true`) Allow existing pull requests?
 * `--dry-run`: (Optional) Simulate mutating actions.
-
-* TODO: `--allow-existing` checks.
-* TODO: `--dry-run` code flow.
 
 <!--
 ### TODO `branch-to-pr`

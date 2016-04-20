@@ -12,6 +12,7 @@ History
 * _Breaking Changes_:
     * `--branch|branch-new` flags are replaced with `--branch-src|branch-dest`.
     * `--action=commit` uses target branch flag `--branch-dest` now.
+    * `--commit-msg` is now `--msg`.
     * `null` source means "create" file.
     * `null` transform output means "delete" file.
     * Change signature of transforms to `(obj, callback)`.
