@@ -396,6 +396,10 @@ use case for multibot.
 * TODO: Diff report (diff vs. master).
 * TODO: Report notes
 
+Note that we _disallow_ the following flags here:
+
+* `--allow-existing`
+
 -->
 
 ## GitHub API
