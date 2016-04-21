@@ -115,6 +115,59 @@ strings**. Do not allow a transform to process anything that is not UTF8 string
 data. (We could refactor `multibot` in the future to accomodate non-string
 formats.)
 
+### Note - Repeated Transforms
+
+Be very careful to inspect and watch your transforms for repeated runs if a
+`--action=commit` fails for some, but not all, repositories and you're
+retrying. The reason is that for repositories that _succeeeded_ the first time,
+the transform will get applied _again_ with potentially negative results unless
+you plan for this.
+
+For example, if you have a situation like:
+
+```js
+// --transform=rocks.js
+module.exports = function (obj, callback) {
+  callback(null, obj.contents.replace("multibot", "multibot ROCKS!!!"));
+};
+```
+
+```
+// --files README.md
+Woah, multibot
+```
+
+A sucessful transform would produce:
+
+```
+// --files README.md
+Woah, multibot ROCKS!!!
+```
+
+However, if that transform was run again (say this repo succeed first time
+but others failed, so you're running the same commit command again):
+
+```
+// --files README.md
+Woah, multibot ROCKS!!! ROCKS!!!
+```
+
+which is probably not what we want. The remedy for this specific situation is
+to either, adjust the repositories passed to `--repos` on the command line to
+remove the success, or to refactor the transform to be able to run repeatedly.
+Here, that may just be detecting that `ROCKS!!!` doesn't already occur, or
+allowing it to, then squashing it.
+
+```js
+// --transform=rocks.js
+module.exports = function (obj, callback) {
+  callback(null, obj.contents
+    .replace("multibot", "multibot ROCKS!!!") // Add the rocks
+    .replace("ROCKS!!! ROCKS!!!", "ROCKS!!!") // Squash the rocks if 2
+  );
+};
+```
+
 ## Actions
 
 Multibot can initiate various read-only and repository-mutating actions. A

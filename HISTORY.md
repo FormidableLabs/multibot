@@ -10,6 +10,7 @@ History
 * Add `--dry-run` option to skip all mutating actions.
 * Allow `--action=read` to process non-existing files.
 * _Breaking Changes_:
+    * `--allow-existing=false` by default. (Error if existing branch / PR).
     * `--branch|branch-new` flags are replaced with `--branch-src|branch-dest`.
     * `--action=commit` uses target branch flag `--branch-dest` now.
     * `--commit-msg` is now `--msg`.
