@@ -265,12 +265,12 @@ $ multibot \
 Flags:
 
 * `--action=branch`
-* `--branch-src`: (Optional, default: `master`) Source to branch from.
+* `--branch-src`: (Optional, default: `master`) Source branch to read from.
 * `--branch-dest`: Non-`master` new branch to create.
 * `--org`: (Optional) GitHub organization for repos
 * `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
 * `--format`: (Optional) Output report as `json`, `text`, or `diff`
-* `--allow-existing`: (Optional, default: `false`) Allow existing destination branches?
+* `--allow-existing`: (Optional, default: `true`) Allow existing destination branches?
 * `--dry-run`: (Optional) Simulate mutating actions.
 
 ### `commit`
@@ -382,45 +382,25 @@ Flags:
 * `--title`: Title for pull request (fallback to first line of `--msg`)
 * `--msg`: Pull request description
 * `--format`: (Optional) Output report as `json`, `text`, or `diff`
-* `--allow-existing`: (Optional, default: `false`) Allow existing pull requests?
+* `--allow-existing`: (Optional, default: `true`) Allow existing pull requests?
 * `--dry-run`: (Optional) Simulate mutating actions.
 
-
-### `branch-to-pr`
+<!--
+### TODO `branch-to-pr`
 
 Create a branch, add commits, open a PR. An "all-in-one" aggregator for a common
 use case for multibot.
 
-```sh
-$ multibot \
-  --org FormidableLabs --repos repo1 repo2 repo3 \
-  --branch-src=master \
-  --branch-dest=branch-o-doom \
-  --files README.md LICENSE docs/DANGER.md \
-  --transform="PATH/TO/transformify.js" \
-  --action=branch-to-pr \
-  --title="The Bots have arrived" \
-  --msg="...and are making mischief" \
-  --format=diff
-```
-Flags:
-
-* `--action=pull-request`
-* `--branch-src`: Base branch for pull request against
-* `--branch-dest`: Non-`master` target branch to create pull request for
-* `--org`: (Optional) GitHub organization for repos
-* `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
-* `--files`: List of files (space delimited) to read / transform
-* `--transform`: Path to transform JS file
-* `--title`: Title for pull request (fallback to first line of `--msg`)
-* `--msg`: Pull request description
-* `--format`: (Optional) Output report as `json`, `text`, or `diff`
-* `--dry-run`: (Optional) Simulate mutating actions.
+* TODO: Note different/changing use of `branch` and `branch-dest` in this action.
+* TODO: Flag to error if branch already PR-ed.
+* TODO: Diff report (diff vs. master).
+* TODO: Report notes
 
 Note that we _disallow_ the following flags here:
 
 * `--allow-existing`
 
+-->
 
 ## GitHub API
 
