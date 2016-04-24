@@ -247,6 +247,11 @@ Flags:
 * `--transform`: (Optional) Path to transform JS file
 * `--format`: (Optional) Output report as `json`, `text`, or `diff`
 
+Note that because we do one shot HTTP requests for existing contents to a
+repository, `multibot` can't distinguish a single file not being found (normal,
+means you'd create one) with a non-existent repo which will error in other
+commands.
+
 ### `branch`
 
 Create a branch in repositories.
