@@ -25,12 +25,12 @@ Usage: multibot --action=<string> [options]
 
 Options:
   --action          Actions to take
-                    [string] [choices: "read", "branch", "commit", "pull-request"] [default: "read"]
+    [string] [choices: "read", "branch", "commit", "pull-request", "branch-to-pr"] [default: "read"]
   --branch-src      Source branch to start from / target for pull request
                                                                         [string] [default: "master"]
   --branch-dest     Destination branch to create / commit / open in a pull request          [string]
   --allow-existing  Allow existing destination branches / PRs for `--action=branch|pull-request`?
-                                                                           [boolean] [default: true]
+                                                                          [boolean] [default: false]
   --files           List of files (space delimited) to read / transform                      [array]
   --org             GitHub organization for repos (can be instead specified on repos)       [string]
   --repos           GitHub repositories (space delimited) of form `repo` or `org/repo`
@@ -40,7 +40,7 @@ Options:
   --gh-token        GitHub token                                                            [string]
   --transform       Path to transform JS file                                               [string]
   --format          Display output format
-                                        [string] [choices: "json", "text", "diff"] [default: "json"]
+                                        [string] [choices: "json", "text", "diff"] [default: "diff"]
   --msg             Commit message / pull request description                               [string]
   --title           Title for pull request (fallback to first line of `--msg`)              [string]
   --dry-run         Skip / simulate all mutating actions                  [boolean] [default: false]
@@ -48,18 +48,9 @@ Options:
   -v, --version     Show version number                                                    [boolean]
 
 Examples:
-  multibot --action=read --gh-token=TOKEN --org       Display the README file of multibot from
-  FormidableLabs --repos repo1 repo2 --files          GitHub
-  README.md
-  multibot --action=branch --gh-token=TOKEN --org     Create new `feature-foo` branch
-  FormidableLabs --repos repo1 repo2
-  --branch-dest=feature-foo
-  multibot --action=commit --gh-token=TOKEN --org     Add transform of README as commit to branch
-  FormidableLabs --repos repo1 repo2 --files          `feature-foo`
+  multibot --action=branch-to-pr --gh-token=TOKEN     Create branch, commits, and PR for new
+  --org FormidableLabs --repos repo1 repo2 --files    `feature-foo` branch
   README.md --transform=/PATH/TO/transform.js
-  --msg='commit bot'
-  multibot --action=pull-request --gh-token=TOKEN     Create pull request for `feature-foo` branch
-  --org FormidableLabs --repos repo1 repo2
   --branch-dest=feature-foo --title='PR from Bot'
   --msg='BotBot'
 ```

@@ -6,7 +6,7 @@ History
 * Implements `--action=branch-to-pr` to create branch, commit, and PR.
 * Implements `--action=pull-request` to create pull requests.
 * Implements `--action=commit` to create commits in repositories.
-* Replace `octonode` client with `github-api`.
+* Replace `octonode` client with `github`.
 * Add `--dry-run` option to skip all mutating actions.
 * Allow `--action=read` to process non-existing files.
 * _Breaking Changes_:
