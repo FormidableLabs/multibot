@@ -1,7 +1,7 @@
 History
 =======
 
-## Current
+## 0.2.0
 
 * Implements `--action=branch-to-pr` to create branch, commit, and PR.
 * Implements `--action=pull-request` to create pull requests.
