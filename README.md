@@ -24,11 +24,13 @@ A friendly multi-repository robot.
 Usage: multibot --action=<string> [options]
 
 Options:
-  --action          Actions to take [string] [choices: "read", "branch", "commit"] [default: "read"]
-  --branch          Target branch to use for operations                 [string] [default: "master"]
-  --branch-new      New branch to create for `--action=branch`                              [string]
-  --allow-existing  Allow existing destination branches for `--action=branch`?
-                                                                           [boolean] [default: true]
+  --action          Actions to take
+    [string] [choices: "read", "branch", "commit", "pull-request", "branch-to-pr"] [default: "read"]
+  --branch-src      Source branch to start from / target for pull request
+                                                                        [string] [default: "master"]
+  --branch-dest     Destination branch to create / commit / open in a pull request          [string]
+  --allow-existing  Allow existing destination branches / PRs for `--action=branch|pull-request`?
+                                                                          [boolean] [default: false]
   --files           List of files (space delimited) to read / transform                      [array]
   --org             GitHub organization for repos (can be instead specified on repos)       [string]
   --repos           GitHub repositories (space delimited) of form `repo` or `org/repo`
@@ -38,16 +40,19 @@ Options:
   --gh-token        GitHub token                                                            [string]
   --transform       Path to transform JS file                                               [string]
   --format          Display output format
-                                        [string] [choices: "json", "text", "diff"] [default: "json"]
-  --commit-msg      A commit message for the transform                                      [string]
+                                        [string] [choices: "json", "text", "diff"] [default: "diff"]
+  --msg             Commit message / pull request description                               [string]
+  --title           Title for pull request (fallback to first line of `--msg`)              [string]
   --dry-run         Skip / simulate all mutating actions                  [boolean] [default: false]
   -h, --help        Show help                                                              [boolean]
   -v, --version     Show version number                                                    [boolean]
 
 Examples:
-  multibot --action=read --gh-token=TOKEN             Display the README file of multibot from
-  --org FormidableLabs --repos multibot --files       GitHub
-  README.md
+  multibot --action=branch-to-pr --gh-token=TOKEN     Create branch, commits, and PR for new
+  --org FormidableLabs --repos repo1 repo2 --files    `feature-foo` branch
+  README.md --transform=/PATH/TO/transform.js
+  --branch-dest=feature-foo --title='PR from Bot'
+  --msg='BotBot'
 ```
 
 ## Transforms
@@ -101,6 +106,59 @@ strings**. Do not allow a transform to process anything that is not UTF8 string
 data. (We could refactor `multibot` in the future to accomodate non-string
 formats.)
 
+### Note - Repeated Transforms
+
+Be very careful to inspect and watch your transforms for repeated runs if a
+`--action=commit` fails for some, but not all, repositories and you're
+retrying. The reason is that for repositories that _succeeeded_ the first time,
+the transform will get applied _again_ with potentially negative results unless
+you plan for this.
+
+For example, if you have a situation like:
+
+```js
+// --transform=rocks.js
+module.exports = function (obj, callback) {
+  callback(null, obj.contents.replace("multibot", "multibot ROCKS!!!"));
+};
+```
+
+```
+// --files README.md
+Woah, multibot
+```
+
+A sucessful transform would produce:
+
+```
+// --files README.md
+Woah, multibot ROCKS!!!
+```
+
+However, if that transform was run again (say this repo succeed first time
+but others failed, so you're running the same commit command again):
+
+```
+// --files README.md
+Woah, multibot ROCKS!!! ROCKS!!!
+```
+
+which is probably not what we want. The remedy for this specific situation is
+to either, adjust the repositories passed to `--repos` on the command line to
+remove the success, or to refactor the transform to be able to run repeatedly.
+Here, that may just be detecting that `ROCKS!!!` doesn't already occur, or
+allowing it to, then squashing it.
+
+```js
+// --transform=rocks.js
+module.exports = function (obj, callback) {
+  callback(null, obj.contents
+    .replace("multibot", "multibot ROCKS!!!") // Add the rocks
+    .replace("ROCKS!!! ROCKS!!!", "ROCKS!!!") // Squash the rocks if 2
+  );
+};
+```
+
 ## Actions
 
 Multibot can initiate various read-only and repository-mutating actions. A
@@ -122,24 +180,24 @@ If that looks good, then create a branch, commit the transform, and open a PR:
 ```sh
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
-  --branch=master \
-  --branch-new=feature-foo \
-  --action=branch
+  --branch-src=master \
+  --branch-dest=feature-foo \
+  --action=branch \
+  --format=text
 
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
   --transform=foo.js --files README.md \
-  --branch=feature-foo \
+  --branch-dest=feature-foo \
   --action=commit \
   --format=diff
-```
 
-<!-- TODO: Open Pull Request / FULL PR
-```
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
-  --branch=feature-foo \
-  --action=pull-request
+  --branch-dest=feature-foo \
+  --msg=$'A big change\nfrom a bot.'' \ # Note use of bash ANSI C parsing of newline
+  --action=pull-request \
+  --format=text
 ```
 
 or all as a single command:
@@ -148,12 +206,11 @@ or all as a single command:
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
   --transform=foo.js --files README.md \
-  --branch=master \
-  --branch-new=feature-foo \
-  --action=open-pr \
-  --format=diff
+  --branch-src=master \
+  --branch-dest=feature-foo \
+  --msg=$'A big change\nfrom a bot.'' \
+  --action=branch-to-pr
 ```
--->
 
 ### `read`
 
@@ -174,24 +231,29 @@ $ multibot \
 Flags:
 
 * `--action=read`
-* `--branch`: (Optional, default: `master`) Source branch to read from.
+* `--branch-src`: (Optional, default: `master`) Source branch to read from.
 * `--org`: (Optional) GitHub organization for repos
 * `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
 * `--files`: List of files (space delimited) to read / transform
 * `--transform`: (Optional) Path to transform JS file
 * `--format`: (Optional) Output report as `json`, `text`, or `diff`
 
+Note that because we do one shot HTTP requests for existing contents to a
+repository, `multibot` can't distinguish a single file not being found (normal,
+means you'd create one) with a non-existent repo which will error in other
+commands.
+
 ### `branch`
 
-Create a branch in repositories
+Create a branch in repositories.
 
 Example:
 
 ```sh
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
-  --branch=master \
-  --branch-new=branch-o-doom \
+  --branch-src=master \
+  --branch-dest=branch-o-doom \
   --action=branch \
   --format=text
 ```
@@ -199,12 +261,12 @@ $ multibot \
 Flags:
 
 * `--action=branch`
-* `--branch`: (Optional, default: `master`) Source branch to read from.
-* `--branch-new`: Non-`master` new branch to create.
+* `--branch-src`: (Optional, default: `master`) Source to branch from.
+* `--branch-dest`: Non-`master` new branch to create.
 * `--org`: (Optional) GitHub organization for repos
 * `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
 * `--format`: (Optional) Output report as `json`, `text`, or `diff`
-* `--allow-existing`: (Optional, default: `true`) Allow existing destination branches?
+* `--allow-existing`: (Optional, default: `false`) Allow existing destination branches?
 * `--dry-run`: (Optional) Simulate mutating actions.
 
 ### `commit`
@@ -218,11 +280,11 @@ Example:
 ```sh
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
-  --branch=branch-o-doom \
+  --branch-dest=branch-o-doom \
   --files README.md LICENSE docs/DANGER.md \
   --action=commit \
   --transform="PATH/TO/transformify.js" \
-  --commit-msg="Add some DANGER to the repo files." \
+  --msg="Add some DANGER to the repo files." \
   --format=diff
 ```
 
@@ -253,10 +315,12 @@ on a specific repository is a noop, no actual mutation actions are performed.
 Flags:
 
 * `--action=commit`
-* `--branch`: Non-`master` target branch to update with commit
+* `--branch-dest`: Non-`master` target branch to update with commit. (Also the
+  source branch to read current files from.)
 * `--org`: (Optional) GitHub organization for repos
 * `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
 * `--files`: List of files (space delimited) to read / transform
+* `--msg`: Commit message
 * `--transform`: (Optional) Path to transform JS file
 * `--format`: (Optional) Output report as `json`, `text`, or `diff`
 * `--dry-run`: (Optional) Simulate mutating actions.
@@ -287,25 +351,91 @@ existing blob references while splicing in our updates / creates and creating
 a new tree _without_ a base tree reference, which completely replaces the
 entire former tree.
 
-<!--
-### TODO `pull-request`
+### `pull-request`
 
-Create a pull request from a branch in repositories
+Create a pull request from a branch in repositories.
 
-* TODO: Error if `master` is `branch`.
-* TODO: Files not required here.
-* TODO: Flag to error if branch already PR-ed.
-* TODO: Diff report (diff vs. master).
-* TODO: Report notes
+Example:
 
-### TODO `full-pr`
+```sh
+$ multibot \
+  --org FormidableLabs --repos repo1 repo2 repo3 \
+  --branch-src=master \
+  --branch-dest=branch-o-doom \
+  --action=pull-request \
+  --title="The Bots have arrived" \
+  --msg="...and are making mischief" \
+  --format=text
+```
+
+Flags:
+
+* `--action=pull-request`
+* `--branch-src`: Base branch for pull request against
+* `--branch-dest`: Non-`master` target branch to create pull request for
+* `--org`: (Optional) GitHub organization for repos
+* `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
+* `--title`: Title for pull request (fallback to first line of `--msg`)
+* `--msg`: Pull request description
+* `--format`: (Optional) Output report as `json`, `text`, or `diff`
+* `--allow-existing`: (Optional, default: `false`) Allow existing pull requests?
+* `--dry-run`: (Optional) Simulate mutating actions.
+
+
+### `branch-to-pr`
 
 Create a branch, add commits, open a PR. An "all-in-one" aggregator for a common
 use case for multibot.
 
-* TODO: Note different/changing use of `branch` and `branch-new` in this action.
+```sh
+$ multibot \
+  --org FormidableLabs --repos repo1 repo2 repo3 \
+  --branch-src=master \
+  --branch-dest=branch-o-doom \
+  --files README.md LICENSE docs/DANGER.md \
+  --transform="PATH/TO/transformify.js" \
+  --action=branch-to-pr \
+  --title="The Bots have arrived" \
+  --msg="...and are making mischief" \
+  --format=diff
+```
+Flags:
 
--->
+* `--action=pull-request`
+* `--branch-src`: Base branch for pull request against
+* `--branch-dest`: Non-`master` target branch to create pull request for
+* `--org`: (Optional) GitHub organization for repos
+* `--repos`: GitHub repositories (space delimited) of form `repo` or `org/repo`
+* `--files`: List of files (space delimited) to read / transform
+* `--transform`: Path to transform JS file
+* `--title`: Title for pull request (fallback to first line of `--msg`)
+* `--msg`: Pull request description
+* `--format`: (Optional) Output report as `json`, `text`, or `diff`
+* `--dry-run`: (Optional) Simulate mutating actions.
+
+Note that we _disallow_ the following flags here:
+
+* `--allow-existing`
+
+
+## GitHub API
+
+`multibot` has the convenient feature that it never touches disk to perform any
+repository / branch operations. This is done by relying entirely on the
+[GitHub API](https://developer.github.com/v3/) for operations.
+
+This also means that `multibot` must stay within the
+[API rate limits](https://developer.github.com/v3/rate_limit/). If you go
+beyond the limit, you will most likely encounter 403 HTTP error codes. If this
+happens, check your rate limit with:
+
+```sh
+$ curl -H "Authorization: token OAUTH-TOKEN" https://api.github.com/rate_limit
+```
+
+Look at the `remaining` field to see how many requests you have left for the
+hour. GitHub currently allows authenticated users to make up to 5,000 requests
+per hour.
 
 ## GitHub API
 
