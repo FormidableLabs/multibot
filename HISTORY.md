@@ -1,6 +1,10 @@
 History
 =======
 
+## Current
+
+* Add GitHub Enterprise support.
+
 ## 0.2.0
 
 * Implements `--action=branch-to-pr` to create branch, commit, and PR.
