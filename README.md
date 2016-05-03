@@ -38,6 +38,8 @@ Options:
   --gh-user         GitHub user name (needs user + pass)                                    [string]
   --gh-pass         GitHub password (needs user + pass)                                     [string]
   --gh-token        GitHub token                                                            [string]
+  --gh-host         GitHub host URL (for enterprise)                                        [string]
+  --gh-path-prefix  GitHub path prefix (for enterprise). E.g., '/api/v3'                    [string]
   --transform       Path to transform JS file                                               [string]
   --format          Display output format
                                         [string] [choices: "json", "text", "diff"] [default: "diff"]
@@ -437,24 +439,30 @@ Look at the `remaining` field to see how many requests you have left for the
 hour. GitHub currently allows authenticated users to make up to 5,000 requests
 per hour.
 
-## GitHub API
+### Enterprise GitHub
 
-`multibot` has the convenient feature that it never touches disk to perform any
-repository / branch operations. This is done by relying entirely on the
-[GitHub API](https://developer.github.com/v3/) for operations.
+`multibot` supports GitHub enterprise installations that use the `v3` API. The
+relevant options that you may need to use include:
 
-This also means that `multibot` must stay within the
-[API rate limits](https://developer.github.com/v3/rate_limit/). If you go
-beyond the limit, you will most likely encounter 403 HTTP error codes. If this
-happens, check your rate limit with:
+* `--gh-host`: The GitHub API host to use. By default, public GitHub is used
+  (`api.github.com`). Switch to your enterprise host like:
+  `my-github.my-company.com`.
+* `--gh-path-prefix`: Some GitHub enterprise instances need an extra prefix to
+  the API URLs, which is usually `"/api/v3"` if omitting this option doesn't
+  work. Public GitHub does not need this option.
+
+Put together, a full-fledged command for GitHub enterprise might look like:
 
 ```sh
-$ curl -H "Authorization: token OAUTH-TOKEN" https://api.github.com/rate_limit
+$ multibot \
+  --gh-token=<SNIPPED> \
+  --gh-host=my-github.my-company.com \
+  --gh-path-prefix="/api/v3" \
+  --org EnterpriseGHOrg --repos repo1 repo2 repo3 \
+  --transform=foo.js --files README.md \
+  --action=read \
+  --format=diff
 ```
-
-Look at the `remaining` field to see how many requests you have left for the
-hour. GitHub currently allows authenticated users to make up to 5,000 requests
-per hour.
 
 [trav_img]: https://api.travis-ci.org/FormidableLabs/multibot.svg
 [trav_site]: https://travis-ci.org/FormidableLabs/multibot
