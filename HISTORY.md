@@ -1,6 +1,10 @@
 History
 =======
 
+## 0.3.1
+
+* Fix `bin` to actually create `multibot`.
+
 ## 0.3.0
 
 * Add GitHub Enterprise support.
