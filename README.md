@@ -80,7 +80,7 @@ module.exports = function (obj, callback) {
 ```
 
 A transform is hooked into a multibot action with the option:
-`--transform=PATH/TO/file.js`.
+`--transform=PATH/TO/file.js` (absolute or relative paths work).
 
 The `repo` and `file` fields are passed in the case that you wish to have
 conditional transform logic, while still operating over a lot of files.
@@ -197,7 +197,7 @@ $ multibot \
 $ multibot \
   --org FormidableLabs --repos repo1 repo2 repo3 \
   --branch-dest=feature-foo \
-  --msg=$'A big change\nfrom a bot.'' \ # Note use of bash ANSI C parsing of newline
+  --msg=$'A big change\nfrom a bot.' \ # Note use of bash ANSI C parsing of newline
   --action=pull-request \
   --format=text
 ```
@@ -210,7 +210,7 @@ $ multibot \
   --transform=foo.js --files README.md \
   --branch-src=master \
   --branch-dest=feature-foo \
-  --msg=$'A big change\nfrom a bot.'' \
+  --msg=$'A big change\nfrom a bot.' \
   --action=branch-to-pr
 ```
 

@@ -1,6 +1,10 @@
 History
 =======
 
+## Current
+
+* Allow relative or absolute paths for `--transform`. ( [@iamdustan][] )
+
 ## 0.3.1
 
 * Fix `bin` to actually create `multibot`.
@@ -38,3 +42,6 @@ History
 * Implements `--action=read` to read / transform files from repositories.
 * Implements `--transform` function options.
 * Implements display output formats of json, text, colored diff.
+
+[@iamdustan]: https://github.com/iamdustan
+[@ryan-roemer]: https://github.com/ryan-roemer
