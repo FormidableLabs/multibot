@@ -17,7 +17,7 @@
     "multibot": "bin/multibot.js"
   },
   "scripts": {
-    "lint-server": "eslint --color -c .eslintrc-server lib bin",
+    "lint-server": "eslint lib bin",
     "lint": "npm run lint-server",
     "check": "npm run lint"
   },
@@ -29,8 +29,9 @@
     "yargs": "^4.3.1"
   },
   "devDependencies": {
-    "eslint": "^2.4.0",
-    "eslint-config-defaults": "^10.0.0-alpha.1",
-    "eslint-plugin-filenames": "^0.2.0"
+    "eslint": "^2.13.1",
+    "eslint-config-formidable": "^2.0.1",
+    "eslint-plugin-filenames": "^1.1.0",
+    "eslint-plugin-import": "^2.0.0"
   }
 }
