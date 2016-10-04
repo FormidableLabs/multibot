@@ -38,6 +38,7 @@ Options:
   --gh-user         GitHub user name (needs user + pass)                                    [string]
   --gh-pass         GitHub password (needs user + pass)                                     [string]
   --gh-token        GitHub token                                                            [string]
+  --auth            Use authentication (limited functionality without)     [boolean] [default: true]
   --gh-host         GitHub host URL (for enterprise)                                        [string]
   --gh-path-prefix  GitHub path prefix (for enterprise). E.g., '/api/v3'                    [string]
   --transform       Path to transform JS file                                               [string]

@@ -5,6 +5,7 @@ node_js:
   - "0.12"
   - "4"
   - "5"
+  - "6"
 
 sudo: false
 
@@ -15,3 +16,20 @@ branches:
 script:
   - npm --version
   - npm run check
+  # Smoke tests
+  # - Just the help
+  - bin/multibot.js -h
+  # - Soup-to-nuts everything test with dry-run
+  - >-
+    bin/multibot.js
+    --no-auth
+    --org FormidableLabs
+    --repos test-repo-o-doom test-repo-o-doom-two
+    --branch-dest=travis-fake-test-branch
+    --action=branch-to-pr
+    --transform="test/func/fixtures/transform-danger.js"
+    --files README.md LICENSE docs/DANGER.md
+    --title=$'CI test'
+    --msg=$'A simple unauthenticated dry-run test for CI...'
+    --format=diff
+    --dry-run

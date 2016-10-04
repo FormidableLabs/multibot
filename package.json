@@ -17,7 +17,7 @@
     "multibot": "bin/multibot.js"
   },
   "scripts": {
-    "lint-server": "eslint lib bin",
+    "lint-server": "eslint lib bin test",
     "lint": "npm run lint-server",
     "check": "npm run lint"
   },
