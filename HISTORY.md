@@ -1,7 +1,7 @@
 History
 =======
 
-## Unreleased
+## 0.5.0
 
 * Add `--no-auth` flag for dry run simple automation tests.
 

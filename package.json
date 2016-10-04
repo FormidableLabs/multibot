@@ -1,6 +1,6 @@
 {
   "name": "multibot",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A friendly multi-repository robot.",
   "main": "lib/index.js",
   "repository": {
