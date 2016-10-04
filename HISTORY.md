@@ -1,7 +1,7 @@
 History
 =======
 
-## Unreleased
+## 0.5.1
 
 * Use `base64` encoding for new blob creation to avoid situation where
   trailing newlines are stripped in `utf-8` encoding.
