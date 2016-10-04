@@ -1,6 +1,11 @@
 History
 =======
 
+## Unreleased
+
+* Use `base64` encoding for new blob creation to avoid situation where
+  trailing newlines are stripped in `utf-8` encoding.
+
 ## 0.5.0
 
 * Add `--no-auth` flag for dry run simple automation tests.
