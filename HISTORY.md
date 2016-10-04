@@ -1,6 +1,10 @@
 History
 =======
 
+## Unreleased
+
+* Add `--no-auth` flag for dry run simple automation tests.
+
 ## 0.4.0
 
 * Allow relative or absolute paths for `--transform`. ( [@iamdustan][] )
